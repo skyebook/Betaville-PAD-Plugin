@@ -34,7 +34,7 @@ public class PADPlugin extends Plugin{
 	private static final String PAD_URL = "http://www.nyc.gov/html/dcp/download/bytes/pad10d.zip";
 	private static final String PAD_FILENAME = "pad10d.zip";
 	private File padArchive;
-	File extractedPADDirectory;
+	private File extractedPADDirectory;
 
 	private LoadingWindow loadingWindow;
 
@@ -43,7 +43,7 @@ public class PADPlugin extends Plugin{
 	 */
 	public PADPlugin(){
 		padArchive = new File(getDataDirectory().toString()+"/"+PAD_FILENAME);
-		extractedPADDirectory = new File(getDataDirectory().toString()+"/"+PAD_FILENAME.substring(0, PAD_FILENAME.indexOf("."))+"/");
+		extractedPADDirectory = new File(getDataDirectory().toString()+"/"+PAD_FILENAME.substring(0, PAD_FILENAME.lastIndexOf("."))+"/");
 	}
 
 	@Override
@@ -184,8 +184,12 @@ public class PADPlugin extends Plugin{
 			
 			int bufferSize = 2048;
 			byte[] readBuffer = new byte[bufferSize];
+			int lastUpdate = 0;
+			int totalRead = 0;
 			int n=-1;
 			while ((n = is.read(readBuffer, 0, bufferSize)) != -1){
+				totalRead+=n;
+				if(totalRead-lastUpdate>1000)loadingWindow.setDLProgress(totalRead/1000, size/1000);
 				outputStream.write(readBuffer, 0, n);
 			}
 			outputStream.close();
@@ -195,6 +199,7 @@ public class PADPlugin extends Plugin{
 			loadingWindow.setDLStatus("Extracting Files");
 
 			// unzip the files
+			System.out.println("Unzipping to " + extractedPADDirectory.toString());
 			Unzipper.unzip(padArchive, extractedPADDirectory);
 
 			loadingWindow.setDLStatus("Done!");
