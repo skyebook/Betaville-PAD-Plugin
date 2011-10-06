@@ -125,7 +125,7 @@ public class LoadingWindow extends Window {
 		layout();
 	}
 	
-	public void setBBLStatus(int current, int max){
+	public void setBBLProgress(int current, int max){
 		bblProgress.setText(current+"/"+max);
 		layout();
 	}
