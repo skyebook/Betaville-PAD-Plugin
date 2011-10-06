@@ -7,5 +7,6 @@
 	<dependencies>
 		<jar>betaville-pad-plugin.jar</jar>
 		<jar>pad-loader.jar</jar>
+		<jar>derby.jar</jar>
 	</dependencies>
 </betaville-plugin>
