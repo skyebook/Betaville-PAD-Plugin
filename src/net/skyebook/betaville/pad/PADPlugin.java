@@ -34,6 +34,7 @@ public class PADPlugin extends Plugin{
 	private static final String PAD_URL = "http://www.nyc.gov/html/dcp/download/bytes/pad10d.zip";
 	private static final String PAD_FILENAME = "pad10d.zip";
 	private File padArchive;
+	File extractedPADDirectory;
 
 	private LoadingWindow loadingWindow;
 
@@ -42,6 +43,7 @@ public class PADPlugin extends Plugin{
 	 */
 	public PADPlugin(){
 		padArchive = new File(getDataDirectory().toString()+"/"+PAD_FILENAME);
+		extractedPADDirectory = new File(getDataDirectory().toString()+"/"+PAD_FILENAME.substring(0, PAD_FILENAME.indexOf("."))+"/");
 	}
 
 	@Override
@@ -180,7 +182,7 @@ public class PADPlugin extends Plugin{
 			loadingWindow.setDLStatus("Extracting Files");
 
 			// unzip the files
-			Unzipper.unzip(padArchive, null);
+			Unzipper.unzip(padArchive, extractedPADDirectory);
 
 			loadingWindow.setDLStatus("Done!");
 		} catch (MalformedURLException e) {
