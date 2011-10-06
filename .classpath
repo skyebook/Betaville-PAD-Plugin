@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/BetavilleApp"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/FengGUI"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/PADLoader"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
