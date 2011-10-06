@@ -61,15 +61,6 @@ public class PADPlugin extends Plugin{
 
 			@Override
 			public void run() {
-				// Check if the data has already been loaded into Derby
-				DerbyImplementation derby = new DerbyImplementation(new File(getDataDirectory().toString()+"/db/").toString());
-				if(derby.tablesWereAlreadyCreated()){
-					System.out.println("Using pre-existing tables");
-				}
-				else{
-					System.out.println("Fresh tables were created");
-				}
-
 				// If it hasn't, check if the PAD archive has already been downloaded
 				if(!doesPADDataExist()){
 					System.out.println("Downloading data");
@@ -78,6 +69,15 @@ public class PADPlugin extends Plugin{
 					} catch (IOException e) {
 						loadingWindow.setDLStatus("Could not download data file");
 					}
+				}
+				
+				// Check if the data has already been loaded into Derby
+				DerbyImplementation derby = new DerbyImplementation(new File(getDataDirectory().toString()+"/db/").toString());
+				if(derby.tablesWereAlreadyCreated()){
+					System.out.println("Using pre-existing tables");
+				}
+				else{
+					System.out.println("Fresh tables were created");
 				}
 
 				// now we can load the data
@@ -170,6 +170,8 @@ public class PADPlugin extends Plugin{
 
 			// perform the download
 			InputStream is = connection.getInputStream();
+			
+			/*
 			int byteValue = -1;
 			int counter = 0;
 			while((byteValue = is.read())!=-1){
@@ -178,6 +180,17 @@ public class PADPlugin extends Plugin{
 				outputStream.write(byteValue);
 			}
 			outputStream.close();
+			*/
+			
+			int bufferSize = 2048;
+			byte[] readBuffer = new byte[bufferSize];
+			int n=-1;
+			while ((n = is.read(readBuffer, 0, bufferSize)) != -1){
+				outputStream.write(readBuffer, 0, n);
+			}
+			outputStream.close();
+			
+			
 
 			loadingWindow.setDLStatus("Extracting Files");
 
