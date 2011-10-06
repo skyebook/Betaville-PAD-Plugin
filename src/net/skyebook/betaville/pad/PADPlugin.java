@@ -189,7 +189,10 @@ public class PADPlugin extends Plugin{
 			int n=-1;
 			while ((n = is.read(readBuffer, 0, bufferSize)) != -1){
 				totalRead+=n;
-				if(totalRead-lastUpdate>1000)loadingWindow.setDLProgress(totalRead/1000, size/1000);
+				if(totalRead-lastUpdate>1000){
+					loadingWindow.setDLProgress(totalRead/1000, size/1000);
+					lastUpdate = totalRead;
+				}
 				outputStream.write(readBuffer, 0, n);
 			}
 			outputStream.close();
