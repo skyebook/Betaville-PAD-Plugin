@@ -15,14 +15,20 @@ import java.util.List;
 import net.skyebook.padloader.database.DerbyImplementation;
 import net.skyebook.padloader.read.ADRReader;
 import net.skyebook.padloader.read.BBLReader;
+import net.skyebook.padloader.record.ADRRecord;
 import net.skyebook.padloader.record.Record;
 
 import org.fenggui.FengGUI;
 
+import com.jme.scene.Spatial;
+
+import edu.poly.bxmc.betaville.SceneScape;
 import edu.poly.bxmc.betaville.SettingsPreferences;
 import edu.poly.bxmc.betaville.jme.fenggui.extras.FengUtils;
 import edu.poly.bxmc.betaville.jme.gamestates.GUIGameState;
+import edu.poly.bxmc.betaville.jme.intersections.ISpatialSelectionListener;
 import edu.poly.bxmc.betaville.jme.loaders.util.Unzipper;
+import edu.poly.bxmc.betaville.model.Design;
 import edu.poly.bxmc.betaville.plugin.JARClassLoader;
 import edu.poly.bxmc.betaville.plugin.Plugin;
 
@@ -38,6 +44,11 @@ public class PADPlugin extends Plugin{
 	private File extractedPADDirectory;
 
 	private LoadingWindow loadingWindow;
+	private MatchDetectionPopup popup;
+	
+	private ISpatialSelectionListener selectionListener;
+	
+	private DerbyImplementation derby;
 
 	/**
 	 * 
@@ -49,10 +60,11 @@ public class PADPlugin extends Plugin{
 
 	@Override
 	public void initialize(JARClassLoader classLoader) {
-		System.out.println("initializing");
 		loadingWindow = FengGUI.createWidget(LoadingWindow.class);
 		loadingWindow.setTitle("PAD Data");
-		System.out.println("loading window created");
+		
+		popup = FengGUI.createWidget(MatchDetectionPopup.class);
+		popup.finishSetup();
 
 		FengUtils.putAtMiddle(loadingWindow, GUIGameState.getInstance().getDisp());
 
@@ -73,7 +85,7 @@ public class PADPlugin extends Plugin{
 				}
 				
 				// Check if the data has already been loaded into Derby
-				DerbyImplementation derby = new DerbyImplementation(new File(getDataDirectory().toString()+"/db/").toString());
+				derby = new DerbyImplementation(new File(getDataDirectory().toString()+"/db/").toString());
 				if(derby.tablesWereAlreadyCreated()){
 					System.out.println("Using pre-existing tables");
 				}
@@ -139,12 +151,81 @@ public class PADPlugin extends Plugin{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				
+				
+				
+				// setup the triggers so that PAD data is loaded
+				selectionListener = new ISpatialSelectionListener() {
+					
+					@Override
+					public void selectionCleared(Design previousDesign) {
+						
+					}
+					
+					@Override
+					public void designSelected(Spatial spatial, Design design) {
+						
+						// Don't do anything if the formatting doens't match
+						if(!correctSyntax(design.getName())) return;
+						
+						
+						// run the database query on another thread
+						SettingsPreferences.getThreadPool().execute(new Search(design.getName()));
+					}
+					
+					private boolean correctSyntax(String string){
+						
+						// sample: M107_Blk53_Lot_7501
+						return string.contains("_Blk") && string.contains("_Lot");
+						
+					}
+					
+					class Search implements Runnable{
+						
+						int boro=-1;
+						int block=-1;
+						int lot=-1;
+						
+						Search(String name){
+							// find boro
+							
+							
+							// find block
+							String blockString = name.substring(name.indexOf("_Blk")+4,name.indexOf("_Lot"));
+							block = Integer.parseInt(blockString);
+							
+							// find lot
+							String lotString = name.substring(name.indexOf("_Lot")+5);
+							lot = Integer.parseInt(lotString);
+							
+							
+						}
+
+						/* (non-Javadoc)
+						 * @see java.lang.Runnable#run()
+						 */
+						@Override
+						public void run() {
+							List<ADRRecord> records = derby.findADRRecord(boro, block, lot);
+						}
+						
+					}
+					
+				};
+				
+				
 			}
 		});
 	}
 	
+	private void displayPopup(List<Record> records){
+		popup.loadRecord(records);
+		FengUtils.putAtMiddleOfScreen(popup);
+	}
+	
 	@Override
 	public void destroy() {
+		SceneScape.removeSelectionListener(selectionListener);
 	}
 
 	private boolean doesPADDataExist(){
