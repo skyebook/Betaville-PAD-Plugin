@@ -157,6 +157,10 @@ public class PADPlugin extends Plugin{
 				// setup the triggers so that PAD data is loaded
 				selectionListener = new ISpatialSelectionListener() {
 					
+					//private String boroPrefix = "?";
+					private String blockPrefix = "B";
+					private String lotPrefix = "L";
+					
 					@Override
 					public void selectionCleared(Design previousDesign) {
 						
@@ -176,7 +180,7 @@ public class PADPlugin extends Plugin{
 					private boolean correctSyntax(String string){
 						
 						// sample: M107_Blk53_Lot_7501
-						return string.contains("_Blk") && string.contains("_Lot");
+						return string.contains(blockPrefix) && string.contains(lotPrefix);
 						
 					}
 					
@@ -187,15 +191,18 @@ public class PADPlugin extends Plugin{
 						int lot=-1;
 						
 						Search(String name){
-							// find boro
 							
+							
+							
+							// find boro
+							// It would be awesome if we could do this
 							
 							// find block
-							String blockString = name.substring(name.indexOf("_Blk")+4,name.indexOf("_Lot"));
+							String blockString = name.substring(name.indexOf(blockPrefix)+blockPrefix.length(),name.indexOf(lotPrefix));
 							block = Integer.parseInt(blockString);
 							
 							// find lot
-							String lotString = name.substring(name.indexOf("_Lot")+5);
+							String lotString = name.substring(name.indexOf(lotPrefix)+lotPrefix.length()+1);
 							lot = Integer.parseInt(lotString);
 							
 							
@@ -206,7 +213,9 @@ public class PADPlugin extends Plugin{
 						 */
 						@Override
 						public void run() {
-							List<ADRRecord> records = derby.findADRRecord(boro, block, lot);
+							// only search by block and lot right now as the borough doesn't seem consistent
+							List<ADRRecord> records = derby.findADRRecord(block, lot);
+							displayPopup(records);
 						}
 						
 					}
@@ -218,7 +227,7 @@ public class PADPlugin extends Plugin{
 		});
 	}
 	
-	private void displayPopup(List<Record> records){
+	private void displayPopup(List<ADRRecord> records){
 		popup.loadRecord(records);
 		FengUtils.putAtMiddleOfScreen(popup);
 	}

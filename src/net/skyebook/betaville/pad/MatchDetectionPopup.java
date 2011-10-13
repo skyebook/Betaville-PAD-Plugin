@@ -5,7 +5,7 @@ package net.skyebook.betaville.pad;
 
 import java.util.List;
 
-import net.skyebook.padloader.record.Record;
+import net.skyebook.padloader.record.ADRRecord;
 
 import org.fenggui.Button;
 import org.fenggui.Container;
@@ -26,7 +26,7 @@ import edu.poly.bxmc.betaville.jme.fenggui.extras.IBetavilleWindow;
  */
 public class MatchDetectionPopup extends Window implements IBetavilleWindow {
 	
-	private List<Record> records;
+	private List<ADRRecord> adrRecord;
 	private int currentRecordIndex = -1;
 	
 	private Container adrNextPrev;
@@ -53,7 +53,7 @@ public class MatchDetectionPopup extends Window implements IBetavilleWindow {
 			@Override
 			public void buttonPressed(Object source, ButtonPressedEvent e) {
 				currentRecordIndex++;
-				adrContainer.setRecord(records.get(currentRecordIndex));
+				adrContainer.setRecord(adrRecord.get(currentRecordIndex));
 				updateNextPrevious();
 			}
 		});
@@ -66,7 +66,7 @@ public class MatchDetectionPopup extends Window implements IBetavilleWindow {
 			@Override
 			public void buttonPressed(Object source, ButtonPressedEvent e) {
 				currentRecordIndex--;
-				adrContainer.setRecord(records.get(currentRecordIndex));
+				adrContainer.setRecord(adrRecord.get(currentRecordIndex));
 				updateNextPrevious();
 			}
 		});
@@ -78,17 +78,17 @@ public class MatchDetectionPopup extends Window implements IBetavilleWindow {
 		getContentContainer().addWidget(adrNextPrev, adrContainer);
 	}
 	
-	public void loadRecord(List<Record> records){
-		this.records=records;
+	public void loadRecord(List<ADRRecord> records){
+		this.adrRecord=records;
 		currentRecordIndex = 0;
 		adrContainer.setRecord(records.get(0));
 		updateNextPrevious();
 	}
 	
 	private void updateNextPrevious(){
-		if(currentRecordIndex==0 || records.size()==0) adrPrev.setEnabled(false);
+		if(currentRecordIndex==0 || adrRecord.size()==0) adrPrev.setEnabled(false);
 		else adrPrev.setEnabled(true);
-		if(currentRecordIndex==records.size()-1 || records.size()==0) adrNext.setEnabled(false);
+		if(currentRecordIndex==adrRecord.size()-1 || adrRecord.size()==0) adrNext.setEnabled(false);
 		else adrNext.setEnabled(true);
 	}
 
