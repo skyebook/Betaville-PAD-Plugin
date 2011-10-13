@@ -23,6 +23,7 @@ import edu.poly.bxmc.betaville.SettingsPreferences;
 import edu.poly.bxmc.betaville.jme.fenggui.extras.FengUtils;
 import edu.poly.bxmc.betaville.jme.gamestates.GUIGameState;
 import edu.poly.bxmc.betaville.jme.loaders.util.Unzipper;
+import edu.poly.bxmc.betaville.plugin.JARClassLoader;
 import edu.poly.bxmc.betaville.plugin.Plugin;
 
 /**
@@ -47,7 +48,7 @@ public class PADPlugin extends Plugin{
 	}
 
 	@Override
-	public void initialize() {
+	public void initialize(JARClassLoader classLoader) {
 		System.out.println("initializing");
 		loadingWindow = FengGUI.createWidget(LoadingWindow.class);
 		loadingWindow.setTitle("PAD Data");
