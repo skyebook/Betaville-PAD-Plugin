@@ -4,6 +4,7 @@
 	<description>Plugin to do something awesome</description>
 	<author>Skye Book</author>
 	<classname>net.skyebook.betaville.pad.PADPlugin</classname>
+	<version>0.1</version>
 	<dependencies>
 		<jar>betaville-pad-plugin.jar</jar>
 		<jar>pad-loader.jar</jar>
